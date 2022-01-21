@@ -19,12 +19,21 @@ public class Door : UsableBase
 
         float y = Input.GetAxisRaw("Mouse Y");
 
-        if ((transform.localRotation.eulerAngles.y > 350 && transform.localRotation.eulerAngles.y < 360) && y < 0) return;
+        y = Mathf.Clamp(y, -5, 5);
 
-        if ((transform.localRotation.eulerAngles.y > 90 && transform.localRotation.eulerAngles.y < 350) && y > 0) return;
+        if ((transform.localRotation.eulerAngles.y > 350 && transform.localRotation.eulerAngles.y < 360) && y < 0)
+        {
+            transform.localRotation = Quaternion.identity;
+            return;
+        } 
+
+        if ((transform.localRotation.eulerAngles.y > 90 && transform.localRotation.eulerAngles.y < 350) && y > 0)
+        {
+            transform.localRotation = Quaternion.Euler(0, 90, 0);
+            return;
+        }
+
         y *= Speed;
-
-        y = Mathf.Clamp(y, -450, 450);
 
         float rotationY = (transform.localRotation.y + y) * Time.deltaTime;
         transform.Rotate(0, rotationY, 0);
