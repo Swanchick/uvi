@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72531662dbca6de478b340b71584409f, type: 3}
+  m_Name: snow
+  m_EditorClassIdentifier: 
+  LeftFootStep: {fileID: 8300000, guid: af2a0ba16b5413a4392111b2aa2122f9, type: 3}
+  RightFootStep: {fileID: 8300000, guid: d0e32cd7c87458647ba3c209baf3093d, type: 3}
+  JumpSound: {fileID: 0}
+  LandSound: {fileID: 0}

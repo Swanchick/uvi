@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6ca4a4b8a87ebdf4d9bddb6983f58c48
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - PlayerController: {instanceID: 0}
+  - Camera: {instanceID: 0}
+  - GorundCheck: {instanceID: 0}
+  - Weapon: {instanceID: 0}
+  - Crosshair: {instanceID: 0}
+  - DefaultCrossHairSprite: {fileID: 21300000, guid: 85305b2717901054c9478f380bb1bab2, type: 3}
+  - WeaponPos: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
