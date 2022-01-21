@@ -171,14 +171,12 @@ public class Save
         public Vec3 Position;
         public Quat Rotation;
         public string WeaponName;
-        public float Health;
 
-        public PlayerSaveData(Vec3 Position, Quat Rotation, string WeaponName, float Health)
+        public PlayerSaveData(Vec3 Position, Quat Rotation, string WeaponName)
         {
             this.Position = Position;
             this.Rotation = Rotation;
             this.WeaponName = WeaponName;
-            this.Health = Health;
         }
     }
 
@@ -217,7 +215,7 @@ public class Save
                 if (ply.Weapon)
                     WeaponName = ply.Weapon.gameObject.name;
 
-                PlayerData = new PlayerSaveData(pos, rot, WeaponName, ply.Health);
+                PlayerData = new PlayerSaveData(pos, rot, WeaponName);
             }
             else if (ent.GetComponent<WeaponBase>())
             {

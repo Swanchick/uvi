@@ -166,9 +166,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float Distance = 3f;
     [SerializeField] private Transform WeaponPos;
 
-    [Header("HealthSystem")]
-    public float Health;
-
     private UsableBase use;
 
     private void GetUsableObjects()
