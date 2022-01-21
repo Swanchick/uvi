@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SaveManagers : SaveLoadManager
 {
-    [SerializeField] private GameManager GameManager;
+    [SerializeField] private GameManagerCollection GameManager;
 
 
     void Start()

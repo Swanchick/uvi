@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
     
     [Header("Setup movement")]
     [SerializeField] private float WalkSpeed = 4f;
-    [SerializeField] private float RunSpeed = 10f;
     [SerializeField] private float smoothTime = 0.03f;
     [SerializeField] private float JumpForce = 7f;
     private float Speed;
@@ -195,8 +194,8 @@ public class Player : MonoBehaviour
             {
                 if (weapon)
                 {
-                    weapon.Take(WeaponPos);
                     Weapon = weapon;
+                    Weapon.Take(WeaponPos);
                     Crosshair.sprite = DefaultCrossHairSprite;
                 }
                 else if (use)

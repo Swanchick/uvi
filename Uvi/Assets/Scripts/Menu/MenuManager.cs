@@ -8,7 +8,7 @@ using System.IO;
 
 public class MenuManager : SaveLoadManager
 {
-    [SerializeField] private GameManager GameManager;
+    [SerializeField] private GameManagerCollection GameManager;
     [SerializeField] private GameObject LoadingMenu;
     [SerializeField] private SaveLoadManager LoadManager;
     
