@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Use
-  - Trigger
   - DontSave
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -15,10 +15,10 @@ TagManager:
   - Water
   - UI
   - Weapon
-  - 
-  - 
-  - 
-  - 
+  - Trigger
+  - Camera
+  - Player
+  - NoCollide
   - 
   - 
   - 

@@ -5300,6 +5300,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8abc6e480db51194dbe6cae41543383a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanUse: 1
+  CrosshairSprite: {fileID: 0}
   WeaponClass: Rifle
   Ammo: 7
   Damage: 0
@@ -5312,6 +5314,9 @@ MonoBehaviour:
   ShootSound: {fileID: 8300000, guid: 8e599ea5b65d063409c50c7781a5610c, type: 3}
   BulletHole: {fileID: 6102877548219781364, guid: b8ef44bb456e45f4282ad0ee5e25ae86, type: 3}
   BulletEffect: {fileID: 1941060026284478459, guid: 31226899977efea48a30631578346dcd, type: 3}
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 127
 --- !u!82 &335557413262857064
 AudioSource:
   m_ObjectHideFlags: 0

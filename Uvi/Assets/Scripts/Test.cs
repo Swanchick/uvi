@@ -4,14 +4,30 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject _object;
+    
+    private GameObject FindInstanceID(int id)
     {
-        GameObject _object = GameObject.Find("Tralalalal");
+        GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
 
-        print(_object);
-            
+        foreach (object obj in allGameObjects)
+        {
+            GameObject ent = (GameObject)obj;
+
+            if (ent.GetInstanceID() == id)
+            {
+                return ent;
+            }
+        }
+
+        return new GameObject();
     }
 
-    
+
+    private void Start()
+    {
+        int value = -1582;
+
+        GameObject obj = FindInstanceID(value);
+    }   
 }

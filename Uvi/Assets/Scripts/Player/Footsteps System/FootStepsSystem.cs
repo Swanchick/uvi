@@ -40,6 +40,8 @@ public class FootStepsSystem : MonoBehaviour
                 textureName = GetMeshMaterialAtPoint(transform.position, hit);
             }
 
+            if (textureName == null) return;
+
             ChangeAudioClip(textureName);
             FootStepsSound();
         }
@@ -171,16 +173,16 @@ public class FootStepsSystem : MonoBehaviour
             if (materialIndex != -1) break;
         }
 
-        string textureName = r.materials[materialIndex].mainTexture.name;
+        string textureName = r.materials[materialIndex].name;
 
-        return textureName;
+        return textureName.Split()[0];
     }
 
     private int a = 0;
 
     private IEnumerator DelaySteps()
     {
-        while (Player.IsMoving() && !Player.IsPaused)
+        while (Player.IsMoving() && !Player.IsPaused && !Player.IsDead)
         {
             AudioSource.Play();
             IsSteping = false;

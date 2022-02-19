@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Weapon : WeaponBase
 {
-    [Header("Damge")]
-    [SerializeField] private float Damage;
+    [Header("Damage")]
+    [SerializeField] private float Damage = 20;
 
     [Header("Ammo setup")]
     [SerializeField] private int MaxAmmo;
@@ -19,6 +19,7 @@ public class Weapon : WeaponBase
     [SerializeField] private AudioClip ShootSound;
     [SerializeField] private GameObject BulletHole;
     [SerializeField] private GameObject BulletEffect;
+
 
     private AudioSource AudioSource;
     private bool delayShoot = true;
@@ -46,37 +47,36 @@ public class Weapon : WeaponBase
         if (Physics.Raycast(ray, out hit))
             Shoot(hit);
 
+        StartCoroutine(Player.CameraShake(0.1f, 0.4f));
+
         StartCoroutine(NextPrimaryAttack(delayTime));
     }
 
     private void Shoot(RaycastHit hit)
     {
         if (!delayShoot) return;
-
-
+        
         if (hit.collider.GetComponent<Rigidbody>() != null)
         {
             hit.rigidbody.AddForceAtPosition(Camera.transform.forward * 1000, hit.point);
             
-        } else if (hit.collider.tag != "Use")
+        } 
+        else if (hit.collider.tag != "Use")
         {   
             Transform _bulletHole = Instantiate(BulletHole, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal)).transform.GetChild(0);
 
             _bulletHole.localPosition += Vector3.up * 0.01f;
             _bulletHole.localRotation = Quaternion.Euler(_bulletHole.localRotation.x, Random.Range(0, 360), _bulletHole.localRotation.z);
+        } 
+        
+        if (hit.collider.GetComponent<IHealth>() != null)
+        {
+            IHealth _health = hit.collider.GetComponent<IHealth>();
+
+            _health.SetDamage(Damage);
         }
 
         Instantiate(BulletEffect, hit.point, Quaternion.LookRotation(hit.normal));
-    }
-
-    public override void Take(Transform weaponPos)
-    {
-        base.Take(weaponPos);
-    }
-
-    public override void Reload()
-    {
-        base.Reload();
     }
 
     private IEnumerator NextPrimaryAttack( float seconds )

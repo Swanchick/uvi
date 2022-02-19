@@ -8,257 +8,99 @@ using System.IO;
 
 public class SaveLoadManager : MonoBehaviour
 {
-    protected string filePath;
+    private string filePath;
+    [SerializeField] private GameManagerCollection GameManager;
+    [SerializeField] private TaskManager TaskManager;
 
     private void Start()
     {
         filePath = $@"{Application.persistentDataPath}/save.sav";
-
-        // LoadGame();
     }
 
-    public void SaveGameByTrigger(GameObject Trigger)
-    {
-        Save save = new Save(Trigger);
-
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        FileStream fileStream = new FileStream(filePath, FileMode.Create);
-
-        GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
-
-        save.SaveObjects(allGameObjects);
-
-        binaryFormatter.Serialize(fileStream, save);
-
-        fileStream.Close();
-    }
-
-    public void SaveGame()
+    public void SaveGame(int sceneId)
     {
         Save save = new Save();
-        
+
         BinaryFormatter binaryFormatter = new BinaryFormatter();
         FileStream fileStream = new FileStream(filePath, FileMode.Create);
-        
-        GameObject[] allGameObjects = FindObjectsOfType<GameObject>();
+        Player ply = GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<Player>();
 
-        save.SaveObjects(allGameObjects);
+        save.SaveScene(sceneId);
+        save.SavePlayer(ply);
+        save.SaveTasks(TaskManager.GetTasks());
 
         binaryFormatter.Serialize(fileStream, save);
-
         fileStream.Close();
     }
 
-    public virtual void DeleteSaveTriggers(Save save)
+    public bool SaveDataExist()
     {
-        foreach (string name in save.Triggers)
-        {
-            GameObject trigger = GameObject.Find(name);
-            Destroy(trigger);
-        }
+        return File.Exists(filePath);
     }
 
     public void LoadGame()
     {
-        if (!File.Exists(filePath)) return;
+        if (!SaveDataExist()) return;
 
         BinaryFormatter binaryFormatter = new BinaryFormatter();
         FileStream fileStream = new FileStream(filePath, FileMode.Open);
 
         Save save = (Save)binaryFormatter.Deserialize(fileStream);
-        DeleteSaveTriggers(save);
-        save.LoadPlayer();
-        save.LoadWeapons();
-        save.LoadDynamicObjects();
-    }
-
-    protected void LoadScene()
-    {
-        if (!File.Exists(filePath)) return;
-
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        FileStream fileStream = new FileStream(filePath, FileMode.Open);
-
-        Save save = (Save)binaryFormatter.Deserialize(fileStream);
-
-        if (SceneManager.GetActiveScene().buildIndex == save.LevelData) return;
-
-        print(save.LevelData);
-
-        SceneManager.LoadScene(save.LevelData);
     }
 }
 
 [Serializable]
 public class Save
 {
-    public List<WeaponSaveData> WeaponsData = new List<WeaponSaveData>();
-    public List<DynamicObjectData> DynamicsData = new List<DynamicObjectData>();
-    public List<string> Triggers = new List<string>();
-    public PlayerSaveData PlayerData;
-    public int LevelData;
-    public Save() { }
+    public int SceneId;
+    public PlayerData playerData;
+    public List<TaskData> Tasks;
 
-    public Save(GameObject Trigger)
+    public void SaveScene(int index)
     {
-        LevelData = SceneManager.GetActiveScene().buildIndex;
-        Triggers.Add(Trigger.name);
+        SceneId = index;
     }
 
-
-    [Serializable]
-    public struct Vec3
+    public void SavePlayer(Player ply)
     {
-        public float x, y, z;
+        Health health = ply.GetComponent<Health>();
 
-        public Vec3(Vector3 Position)
-        {
-            this.x = Position.x;
-            this.y = Position.y;
-            this.z = Position.z;
-        }
+        playerData = new PlayerData(health.GetHealth(), ply.Weapon.WeaponClass);
+    }
 
-        public Vec3(float x, float y, float z)
+    public void SaveTasks(List<Task> tasks)
+    {
+        foreach (Task task in tasks)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            TaskData taskData = new TaskData(task.TaskName, task.GetScore());
+
+            Tasks.Add(taskData);
         }
     }
 
     [Serializable]
-    public struct Quat
+    public struct PlayerData
     {
-        public float x, y, z, w;
+        public float health;
+        public string weapon;
 
-        public Quat(Quaternion Rotation)
+        public PlayerData(float health, string weapon)
         {
-            this.x = Rotation.x;
-            this.y = Rotation.y;
-            this.z = Rotation.z;
-            this.w = Rotation.w;
-        }
-
-        public Quat(float x, float y, float z, float w)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
+            this.health = health;
+            this.weapon = weapon;
         }
     }
 
     [Serializable]
-    public struct WeaponSaveData
+    public struct TaskData
     {
-        public Vec3 Position;
-        public Quat Rotation;
-        public int Ammo;
-        public string Name;
+        public string name;
+        public int score;
 
-        public WeaponSaveData(Vec3 Position, Quat Rotation, string Name, int Ammo)
+        public TaskData(string name, int score)
         {
-            this.Position = Position;
-            this.Rotation = Rotation;
-            this.Name = Name;
-            this.Ammo = Ammo;
-        }
-    }
-
-    [Serializable]
-    public struct PlayerSaveData
-    {
-        public Vec3 Position;
-        public Quat Rotation;
-        public string WeaponName;
-
-        public PlayerSaveData(Vec3 Position, Quat Rotation, string WeaponName)
-        {
-            this.Position = Position;
-            this.Rotation = Rotation;
-            this.WeaponName = WeaponName;
-        }
-    }
-
-    [Serializable]
-    public struct DynamicObjectData
-    {
-        public Vec3 Position;
-        public Quat Rotation;
-        public string Name;
-
-        public DynamicObjectData(Vec3 Position, Quat Rotation, string Name)
-        {
-            this.Position = Position;
-            this.Rotation = Rotation;
-            this.Name = Name;
-        }
-    }
-
-    public void SaveObjects(GameObject[] gameObjects)
-    {   
-        foreach (object _object in gameObjects)
-        {
-            GameObject ent = (GameObject)_object;
-
-            if (ent.isStatic) continue;
-
-            Vec3 pos = new Vec3(ent.transform.position);
-            Quat rot = new Quat(ent.transform.rotation);
-
-            if (ent.GetComponent<Player>())
-            {
-                Player ply = ent.GetComponent<Player>();
-
-                string WeaponName = string.Empty;
-                
-                if (ply.Weapon)
-                    WeaponName = ply.Weapon.gameObject.name;
-
-                PlayerData = new PlayerSaveData(pos, rot, WeaponName);
-            }
-            else if (ent.GetComponent<WeaponBase>())
-            {
-                WeaponBase weaponBase = ent.GetComponent<WeaponBase>();
-
-                WeaponsData.Add(new WeaponSaveData(pos, rot, ent.name, weaponBase.Ammo));
-            }
-            else
-            {
-                if (ent.tag == "Player" || ent.tag == "DontSave") continue;
-                DynamicsData.Add(new DynamicObjectData(pos, rot, ent.name));
-            }
-        }
-    }
-
-    public void LoadPlayer()
-    {
-        GameObject[] ent = GameObject.FindGameObjectsWithTag("Player");
-
-        Player ply = ent[0].GetComponent<Player>();
-
-        ply.LoadSave(PlayerData);
-    }
-
-    public void LoadWeapons()
-    {
-        foreach (WeaponSaveData save in WeaponsData)
-        {
-            GameObject weaponObject = GameObject.Find(save.Name);
-
-            weaponObject.transform.position = new Vector3(save.Position.x, save.Position.y, save.Position.z);
-            weaponObject.transform.rotation = new Quaternion(save.Rotation.x, save.Rotation.y, save.Rotation.z, save.Rotation.w);
-        }
-    }
-
-    public void LoadDynamicObjects()
-    {
-        foreach (DynamicObjectData save in DynamicsData)
-        {
-            GameObject ent = GameObject.Find(save.Name);
-
-            ent.transform.position = new Vector3(save.Position.x, save.Position.y, save.Position.z);
-            ent.transform.rotation = new Quaternion(save.Rotation.x, save.Rotation.y, save.Rotation.z, save.Rotation.w);
+            this.name = name;
+            this.score = score;
         }
     }
 }

@@ -28,6 +28,8 @@ public abstract class WeaponBase : MonoBehaviour, IWeapon
 
     public virtual void Reload() { }
 
+    protected Player Player;
+
     private void Start()
     {   
         Rigidbody = GetComponent<Rigidbody>();
@@ -60,11 +62,12 @@ public abstract class WeaponBase : MonoBehaviour, IWeapon
         }
     }
 
-    public virtual void Take(Transform weaponPos)
+    public virtual void Take(Transform weaponPos, Player ply)
     {
         if (Using) return;
 
         WeaponPos = weaponPos;
+        Player = ply;
         gameObject.layer = WeaponMask;
         SetChildMask(WeaponMask);
         
@@ -100,7 +103,7 @@ public abstract class WeaponBase : MonoBehaviour, IWeapon
         Rigidbody.velocity = velocity;
 
         transform.rotation = Quaternion.Euler(Camera.transform.rotation.eulerAngles + Vector3.up * -90);
-
+        Player = null;
         CanShoot = false;
     }
 

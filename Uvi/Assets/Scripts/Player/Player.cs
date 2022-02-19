@@ -1,19 +1,24 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public bool IsPaused = false;
+    public bool IsDead = false;
 
     /// <summary>
     /// Get character controller and camera
     /// </summary>
-    
+
     [Header("Setup ")]
     [SerializeField] private CharacterController PlayerController;
     [SerializeField] private Camera Camera;
     [SerializeField] private Transform GorundCheck;
+    [SerializeField] private AudioSource AudioSource;
+    public Health health;
 
     public WeaponBase Weapon;
 
@@ -41,6 +46,10 @@ public class Player : MonoBehaviour
     [SerializeField] private Image Crosshair;
     [SerializeField] private Sprite DefaultCrossHairSprite;
 
+    [Header("PlayerDeath")]
+    [SerializeField] private AudioClip DeathSound;
+    [SerializeField] private GameObject PlayerDeathMenu;
+
     /// <summary>
     /// Player camera settings
     /// </summary>
@@ -55,13 +64,19 @@ public class Player : MonoBehaviour
 
         InitPos = WeaponPos.localPosition;
 
+        health = GetComponent<Health>();
+
+        AudioSource = GetComponent<AudioSource>();
+
+        PlayerDeathMenu.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     private void Update()
     {
-        if (IsPaused) return;
+        if (IsPaused || IsDead) return;
 
         MoveController();
         CameraController();
@@ -192,7 +207,7 @@ public class Player : MonoBehaviour
                 if (weapon)
                 {
                     Weapon = weapon;
-                    Weapon.Take(WeaponPos);
+                    Weapon.Take(WeaponPos, this);
                     Crosshair.sprite = DefaultCrossHairSprite;
                 }
                 else if (use)
@@ -305,25 +320,53 @@ public class Player : MonoBehaviour
         Rigidbody body = hit.collider.attachedRigidbody;
 
         if (body == null || body.isKinematic) return;
-        if (hit.moveDirection.y < -0.3f) return;
+        // if (hit.moveDirection.y < -0.3f) return;
 
         Vector3 pushDir = new Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
         body.velocity += (pushDir * PushPower) / body.mass;
     }
 
-    public void LoadSave(Save.PlayerSaveData save)
+    public IEnumerator CameraShake(float duration, float magnitude)
     {
-        PlayerController.enabled = false;
+        Vector3 originalPos = Camera.transform.localPosition;
 
-        transform.position = new Vector3(save.Position.x, save.Position.y, save.Position.z);
-        transform.rotation = new Quaternion(save.Rotation.x, save.Rotation.y, save.Rotation.z, save.Rotation.w);
+        float elapsed = 0f;
 
-        PlayerController.enabled = true;
+        while (elapsed < duration)
+        {
+            float x = UnityEngine.Random.Range(-1f, 1f) * magnitude;
+            float y = UnityEngine.Random.Range(-1f, 1f) * magnitude;
 
-        if (save.WeaponName == null) return;
+            Camera.transform.localPosition = new Vector3(x, y, originalPos.z);
 
-        Weapon = GameObject.Find(save.WeaponName).GetComponent<WeaponBase>();
+            elapsed += Time.deltaTime;
 
-        Weapon.Take(WeaponPos);
+            yield return null;
+        }
+
+        Camera.transform.localPosition = originalPos;
+    }
+
+
+    public void KillPlayer()
+    {
+        Rigidbody _rigidbody = Camera.GetComponent<Rigidbody>();
+        BoxCollider _boxCollider = Camera.GetComponent<BoxCollider>();
+
+        IsDead = true;
+        _rigidbody.isKinematic = false;
+        _boxCollider.enabled = true;
+        AudioSource.clip = DeathSound;
+        AudioSource.Play();
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        PlayerDeathMenu.SetActive(true);
+        Crosshair.gameObject.SetActive(false);
+
+        if (Weapon == null) return;
+
+        Weapon.Drop();
     }
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6102877548219781363}
   - component: {fileID: -5374957054318349522}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BulletHole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 6102877548928872537}
   - component: {fileID: 6102877548928872538}
   - component: {fileID: 6102877548928872539}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

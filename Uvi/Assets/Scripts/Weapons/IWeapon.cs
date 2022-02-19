@@ -6,6 +6,6 @@ public interface IWeapon
 
     void PrimaryAttack();
     void Reload();
-    void Take( Transform weaponPos );
+    void Take( Transform weaponPos, Player ply );
     void Drop();
 }

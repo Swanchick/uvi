@@ -100,7 +100,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4401079268428632647}
-  - component: {fileID: 4401079268428632646}
   - component: {fileID: 4401079268428632641}
   - component: {fileID: 4401079268428632640}
   m_Layer: 0
@@ -127,20 +126,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &4401079268428632646
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4401079268428632643}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 3
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &4401079268428632641
 CharacterController:
   m_ObjectHideFlags: 0
@@ -172,25 +157,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsPaused: 0
+  IsDead: 0
   PlayerController: {fileID: 4401079268428632641}
   Camera: {fileID: 4401079268705295240}
   GorundCheck: {fileID: 4401079267159003631}
+  AudioSource: {fileID: 0}
+  health: {fileID: 0}
   Weapon: {fileID: 0}
   WalkSpeed: 5
-  RunSpeed: 10
   smoothTime: 0.1
   JumpForce: 10
   GroundLayer:
     serializedVersion: 2
     m_Bits: 8
   GroundCheckDistance: 0.4
+  Crosshair: {fileID: 0}
+  DefaultCrossHairSprite: {fileID: 0}
+  DeathSound: {fileID: 0}
+  PlayerDeathMenu: {fileID: 0}
   sensitivity: 4
   WeaponMask:
     serializedVersion: 2
     m_Bits: 64
   Distance: 3
   WeaponPos: {fileID: 4401079267039393136}
-  Health: 0
   SmoothTime: 10
   Amount: 0.1
   Amplitude: 0.005
