@@ -2,12 +2,9 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
-public abstract class WeaponBase : MonoBehaviour, IWeapon
+public abstract class WeaponBase : UseBase
 {
-    public bool Using { get; set; } = false;
-    public bool CanUse = true;
-
-    public Sprite CrosshairSprite;
+    public bool Using = false;
 
     public string WeaponClass = string.Empty;
     public int Ammo = 0;
@@ -62,20 +59,21 @@ public abstract class WeaponBase : MonoBehaviour, IWeapon
         }
     }
 
-    public virtual void Take(Transform weaponPos, Player ply)
+    public override void UseDown(Player ply)
     {
         if (Using) return;
 
-        WeaponPos = weaponPos;
+        WeaponPos = ply.WeaponPos;
+        ply.Weapon = this;
         Player = ply;
         gameObject.layer = WeaponMask;
         SetChildMask(WeaponMask);
-        
+
         Using = true;
 
+        transform.SetParent(WeaponPos, true);
         Rigidbody.isKinematic = true;
         BoxCollider.enabled = false;
-        transform.SetParent(weaponPos, true);
 
         StartCoroutine(CanShootWait());
     }

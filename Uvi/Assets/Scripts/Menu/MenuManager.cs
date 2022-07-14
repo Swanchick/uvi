@@ -27,12 +27,22 @@ public class MenuManager : MonoBehaviour
         GameManager.LoadSavesState = false;
         gameObject.SetActive(false);
 
-        LoadLevel(1);
+        LoadLevel(2);
     }
 
     public void Continue()
     {
-        
+        GameManager.LoadSavesState = true;
+
+        int savedLevel = LoadManager.GetSavedLevel();
+
+        if (savedLevel == 0) return;
+
+        GameObject menu = Instantiate(LoadingMenu, Vector2.zero, Quaternion.identity, Canvas.transform);
+
+        LoadSceneManager manager = menu.GetComponent<LoadSceneManager>();
+
+        manager.Setup(savedLevel);
     }
 
     public void Settings()

@@ -2,12 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestUsable : UsableBase
+public class TestUsable : UseBase
 {
-    public override void Use()
-    {
-        print("Hello World");
-        
-        base.Use();
-    }
+    
 }

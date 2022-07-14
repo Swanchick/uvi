@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65fe086a76b0ba64d9708e316528c0c1, type: 3}
   m_Name: MainGameManager
   m_EditorClassIdentifier: 
-  BackgroundMenu: []
-  LoadSavesState: 0
+  Backgrounds: []
+  BackgroundMenuID: 0
+  LoadSavesState: 1
   Weapons:
-  - {fileID: 5275912534634202257, guid: 139de11ae47dbf64091dbe55dfe068ac, type: 3}
-  - {fileID: 2043308779508671114, guid: dae7cfd65a4f1824e94b2f83b46f0b96, type: 3}
+  - {fileID: 1915652618929308732, guid: 139de11ae47dbf64091dbe55dfe068ac, type: 3}
+  - {fileID: 4055199529311716113, guid: b19ba193a28f0db47ae5b90da71c68c1, type: 3}

@@ -29,7 +29,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void Disabled()
     {
-        Ray ray = new Ray(transform.position, PlayerDetector.forward);
+        Ray ray = new Ray(PlayerDetector.position, PlayerDetector.forward);
         RaycastHit hit;
 
         Debug.DrawRay(transform.position, PlayerDetector.forward * MaxDistance);

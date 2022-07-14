@@ -14,8 +14,6 @@ public class Monster : EnemyBase, IHealth
     [SerializeField] private float SpeedAttack = 2f;
     private float delay = 0;
 
-    
-
     private void Start()
     {
         Rigidbody = GetComponent<Rigidbody>();
@@ -25,13 +23,13 @@ public class Monster : EnemyBase, IHealth
     {   
         if (!IsAlive) return;
 
-        Debug.DrawRay(transform.position, PlayerDetector.forward * 20f);
+        Debug.DrawRay(PlayerDetector.position, PlayerDetector.forward * 20f);
 
         PlayerDetector.LookAt(Player.transform);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, transform.localRotation, 4f * Time.deltaTime);
 
-        Ray ray = new Ray(transform.position, PlayerDetector.forward);
+        Ray ray = new Ray(PlayerDetector.position, PlayerDetector.forward);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, MaxDistance))
@@ -49,7 +47,7 @@ public class Monster : EnemyBase, IHealth
 
     private void TakeDamage()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(PlayerDetector.position, PlayerDetector.forward);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, MinDistance))

@@ -143,12 +143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7ab0a5f0f57134a8173776f4134e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-  CanUse: 1
   CrosshairImage: {fileID: 21300000, guid: c0bcb9f5eeed0ab41861a7cb3751a102, type: 3}
+  LongUse: 1
   Speed: 100
+  CanOpen: 1
 --- !u!54 &5672867988771725307
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -177,7 +175,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -20.557299, y: 1.8985208, z: -2.8472912}
+  m_ConnectedAnchor: {x: -0.111300275, y: 1.8985204, z: -1.7875497}
   m_UseSpring: 0
   m_Spring:
     spring: 0

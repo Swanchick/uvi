@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Door : UsableBase
+public class Door : UseBase
 {
     [SerializeField] private float Speed = 100f;
+    [SerializeField] private bool CanOpen = true;
+    
 
     private Rigidbody Rigidbody;
 
@@ -13,14 +16,12 @@ public class Door : UsableBase
         Rigidbody = GetComponent<Rigidbody>();
     }
 
-    public override void DownUse()
+    public override void Use(Player ply)
     {
-        if (!CanUse) return;
+        if (!CanOpen) return;
+        
+        float mouseY = Input.GetAxis("Mouse Y") * Speed;
 
-        float y = Input.GetAxisRaw("Mouse Y") * Speed;
-
-        Rigidbody.AddTorque(Vector3.up * y);
-
-        base.DownUse();
+        Rigidbody.AddTorque(Vector3.up * mouseY);
     }
 }

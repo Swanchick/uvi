@@ -8,9 +8,24 @@ public class TaskManager : MonoBehaviour
 {
     [SerializeField] private List<Task> Tasks;
 
+    [SerializeField] private List<GameObject> TasksRegister;
+
     public List<Task> GetTasks()
     {
         return Tasks;
+    }
+
+    public void AddTaskByName(string name)
+    {
+        foreach (GameObject obj in TasksRegister)
+        {
+            Task task = obj.GetComponent<Task>();
+
+            if (task == null) continue;
+
+            if (task.TaskName == name)
+                AddTask(obj);
+        }
     }
 
     public void AddTask(GameObject task)
@@ -21,8 +36,24 @@ public class TaskManager : MonoBehaviour
         createdTask.Init(this);
     }
 
+    public void SetScore(string taskName, int score)
+    {
+        if (!TaskExist(taskName)) return;
+
+        foreach (Task task in Tasks)
+        {
+            if (task.TaskName != taskName) continue;
+
+            task.SetScore(score);
+        }
+
+        StartCoroutine(CheckCompleted());
+    }
+
     public void AddScore(string taskName)
-    {   
+    {
+        if (!TaskExist(taskName)) return;
+        
         foreach (Task task in Tasks)
         {
             if (task.TaskName != taskName) continue;
@@ -31,6 +62,17 @@ public class TaskManager : MonoBehaviour
         }
 
         StartCoroutine(CheckCompleted());
+    }
+
+    public bool TaskExist(string name)
+    {
+        foreach (Task task in Tasks)
+        {
+            if (task.TaskName == name)
+                return true;
+        }
+        
+        return false;
     }
 
     public IEnumerator CheckCompleted()
@@ -45,5 +87,21 @@ public class TaskManager : MonoBehaviour
             Destroy(task.gameObject);
             break;
         }
+    }
+
+    public void LoadTasks(Save data)
+    {
+        List<Save.TaskData> tasks = data.Tasks;
+
+        foreach (Save.TaskData task in tasks)
+        {
+            AddTaskByName(task.name);
+
+            if (!TaskExist(task.name)) continue;
+
+            SetScore(task.name, task.score);
+        }
+
+        Debug.Log("All task succefully loaded!");
     }
 }

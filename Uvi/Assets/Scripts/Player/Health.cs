@@ -39,6 +39,11 @@ public class Health : MonoBehaviour
         HealthBar.sizeDelta = Vector2.Lerp(HealthBar.sizeDelta, new Vector2(healthDelta, HealthBar.sizeDelta.y), speed * Time.deltaTime);
     }
 
+    public void SetHealth(float count)
+    {
+        health = count;
+    }
+
     public void SetDamage(float damage)
     {
         if (Player.IsDead) return;

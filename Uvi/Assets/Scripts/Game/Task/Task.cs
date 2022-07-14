@@ -15,7 +15,7 @@ public abstract class Task : MonoBehaviour
     
     [Header("Options")]
     [SerializeField] public bool Completed;
-    [SerializeField] protected int Score;
+    [SerializeField] public int Score;
     [SerializeField] protected float MaxScore = 10f;
     [SerializeField] protected float Speed = 4f;
     [SerializeField] protected float ChangeColorSpeed = 4f;
@@ -61,6 +61,16 @@ public abstract class Task : MonoBehaviour
     public int GetScore()
     {
         return Score;
+    }
+
+    public virtual void SetScore(int score)
+    {
+        if (Completed) return;
+
+        Score = score;
+
+        if (Score >= MaxScore)
+            EndTask();
     }
 
     public virtual void AddScore()

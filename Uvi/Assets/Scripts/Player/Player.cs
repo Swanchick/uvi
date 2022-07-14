@@ -59,15 +59,10 @@ public class Player : MonoBehaviour
     private void Start()
     {
         Speed = WalkSpeed;
-
         Gravity = Physics.gravity.y;
-
         InitPos = WeaponPos.localPosition;
-
         health = GetComponent<Health>();
-
         AudioSource = GetComponent<AudioSource>();
-
         PlayerDeathMenu.SetActive(false);
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -147,7 +142,8 @@ public class Player : MonoBehaviour
     /// </summary>
 
     private float xRotation = 0f;
-    private bool CanCameraRotate = true;
+    public bool CanCameraRotate = true;
+    
     private void CameraController()
     {
         if (Cursor.lockState == CursorLockMode.None || !CanCameraRotate) return;
@@ -179,54 +175,51 @@ public class Player : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] private LayerMask WeaponMask;
     [SerializeField] private float Distance = 3f;
-    [SerializeField] private Transform WeaponPos;
+    [SerializeField] public Transform WeaponPos;
 
-    private UsableBase use;
+    private IUse use;
+    private UseBase useBase;
 
     private void GetUsableObjects()
     {
         Ray ray = new Ray(Camera.transform.position, Camera.transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast( ray, out hit, Distance ))
+        if (Physics.Raycast(ray, out hit, Distance))
         {
             if (Weapon) return;
 
-            WeaponBase weapon = hit.collider.GetComponent<WeaponBase>();
-            use = hit.collider.GetComponent<UsableBase>();
+            use = hit.collider.GetComponent<IUse>();
+            if (use == null) return;
+            if (!use.CanUse()) return;
 
-            if (use)
-                Crosshair.sprite = use.CrosshairImage;
-            else if (weapon)
-                Crosshair.sprite = weapon.CrosshairSprite;
-            else
-                Crosshair.sprite = DefaultCrossHairSprite;
+            useBase = hit.collider.GetComponent<UseBase>();
+            Crosshair.sprite = useBase.CrosshairImage;
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (weapon)
-                {
-                    Weapon = weapon;
-                    Weapon.Take(WeaponPos, this);
-                    Crosshair.sprite = DefaultCrossHairSprite;
-                }
-                else if (use)
-                {
-                    use.Use();
-                }
+                use.UseDown(this);
             }
-        }
-        else
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                use.UseUp(this);
+            }
+        } else
         {
             Crosshair.sprite = DefaultCrossHairSprite;
         }
 
         if (Input.GetMouseButton(0))
         {
-            if (use && use.CanUse)
+            if (use != null)
             {
-                CanCameraRotate = false;
-                use.DownUse();
+                if (useBase.LongUse)
+                {
+                    CanCameraRotate = false;
+
+                    use.Use(this);
+                }
             }
         }
         else
@@ -234,6 +227,7 @@ public class Player : MonoBehaviour
             CanCameraRotate = true;
             use = null;
         }
+        
     }
 
     private void ShootControlls()
@@ -346,8 +340,7 @@ public class Player : MonoBehaviour
 
         Camera.transform.localPosition = originalPos;
     }
-
-
+    
     public void KillPlayer()
     {
         Rigidbody _rigidbody = Camera.GetComponent<Rigidbody>();
@@ -368,5 +361,11 @@ public class Player : MonoBehaviour
         if (Weapon == null) return;
 
         Weapon.Drop();
+    }
+
+    public void LoadPlayer(Save data)
+    {
+        float healthCount = data.playerData.health;
+        health.SetHealth(healthCount);
     }
 }

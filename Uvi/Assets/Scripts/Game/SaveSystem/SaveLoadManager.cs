@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 public class SaveLoadManager : MonoBehaviour
@@ -14,23 +13,46 @@ public class SaveLoadManager : MonoBehaviour
 
     private void Start()
     {
-        filePath = $@"{Application.persistentDataPath}/save.sav";
+        filePath = $@"{Application.persistentDataPath}/game.json";
+
+        if (!GameManager.LoadSavesState) return;
+
+        LoadGame();
+
+        GameManager.LoadSavesState = false;
     }
 
     public void SaveGame(int sceneId)
     {
         Save save = new Save();
 
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        FileStream fileStream = new FileStream(filePath, FileMode.Create);
-        Player ply = GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<Player>();
+        GameObject player = GameObject.FindGameObjectsWithTag("Player")[0];
+        GameObject[] tasks = GameObject.FindGameObjectsWithTag("Task");
 
-        save.SaveScene(sceneId);
-        save.SavePlayer(ply);
-        save.SaveTasks(TaskManager.GetTasks());
+        save.SceneId = sceneId;
+        save.SavePlayer(player);
+        save.SaveTasks(tasks);
 
-        binaryFormatter.Serialize(fileStream, save);
-        fileStream.Close();
+        File.WriteAllText(filePath, JsonUtility.ToJson(save));
+
+        Debug.Log("All saved successfully!");
+    }
+
+    public int GetSavedLevel()
+    {
+        if (!SaveDataExist()) return 0;
+
+        Save save = JsonUtility.FromJson<Save>(File.ReadAllText(filePath));
+
+        return save.SceneId;
+    }
+
+    public void ChangeLevel(int indexLevel)
+    {
+        SaveGame(indexLevel);
+        
+        SceneManager.LoadScene(indexLevel);
+        GameManager.LoadSavesState = true;
     }
 
     public bool SaveDataExist()
@@ -42,10 +64,12 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (!SaveDataExist()) return;
 
-        BinaryFormatter binaryFormatter = new BinaryFormatter();
-        FileStream fileStream = new FileStream(filePath, FileMode.Open);
+        Player player = GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<Player>();
 
-        Save save = (Save)binaryFormatter.Deserialize(fileStream);
+        Save save = JsonUtility.FromJson<Save>(File.ReadAllText(filePath));
+
+        player.LoadPlayer(save);
+        TaskManager.LoadTasks(save);
     }
 }
 
@@ -54,27 +78,28 @@ public class Save
 {
     public int SceneId;
     public PlayerData playerData;
-    public List<TaskData> Tasks;
+    public List<TaskData> Tasks = new List<TaskData>();
 
-    public void SaveScene(int index)
+    public void SavePlayer(GameObject player)
     {
-        SceneId = index;
+        Player ply = player.GetComponent<Player>();
+        Health health = player.GetComponent<Health>();
+
+        string weaponClass = string.Empty;
+
+        if (ply.Weapon != null)
+            weaponClass = ply.Weapon.WeaponClass;
+
+        playerData = new PlayerData(health.health);
     }
 
-    public void SavePlayer(Player ply)
+    public void SaveTasks(GameObject[] tasks)
     {
-        Health health = ply.GetComponent<Health>();
-
-        playerData = new PlayerData(health.GetHealth(), ply.Weapon.WeaponClass);
-    }
-
-    public void SaveTasks(List<Task> tasks)
-    {
-        foreach (Task task in tasks)
+        foreach (GameObject task in tasks)
         {
-            TaskData taskData = new TaskData(task.TaskName, task.GetScore());
+            Task _task = task.GetComponent<Task>();
 
-            Tasks.Add(taskData);
+            Tasks.Add(new TaskData(_task.TaskName, _task.Score));
         }
     }
 
@@ -82,12 +107,10 @@ public class Save
     public struct PlayerData
     {
         public float health;
-        public string weapon;
 
-        public PlayerData(float health, string weapon)
+        public PlayerData(float health)
         {
             this.health = health;
-            this.weapon = weapon;
         }
     }
 

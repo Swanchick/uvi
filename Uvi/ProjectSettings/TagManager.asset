@@ -7,6 +7,7 @@ TagManager:
   - Use
   - DontSave
   - Enemy
+  - Task
   layers:
   - Default
   - TransparentFX
